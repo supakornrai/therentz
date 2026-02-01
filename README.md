@@ -1,16 +1,11 @@
-# the_rentz
+# Mobile App
 
-A new Flutter project.
+## The RentZ
 
-## Getting Started
+เป็นแอปพลิเคชันสำหรับ ซื้อรถยนต์มือสองจากเต็นท์รถเพียงแห่งเดียว ซึ่งเป็นช่องทางกลางระหว่าง ลูกค้า และ เต็นท์รถ สำหรับนัดหมายทำธุรกรรมเกี่ยวกับรถยนต์ได้อย่างสะดวก และเป็นระบบ
 
-This project is a starting point for a Flutter application.
+- [Figma design](https://www.figma.com/design/mFYcAHcU5p7CqMd97oRtiD/Mobile-app?node-id=190-1802&t=kodYXJbIPh5mYD0S-1)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**Developer**
+- นายพชรทรัพย์ หล่ออริยา 6710451089
+- //TODO : ใส่ข้อมูลของบิว
