@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "897694489294",
+    "project_id": "auththerentz-ffc20",
+    "storage_bucket": "auththerentz-ffc20.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897694489294:android:48dc98bb2bd9159474ce9f",
+        "android_client_info": {
+          "package_name": "com.example.the_rentz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ2eKg0ET3wrsCAoVYUK9gJKN2VqcrhRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
