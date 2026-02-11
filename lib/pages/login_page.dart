@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:the_rentz/components/my_button.dart';
 import 'package:the_rentz/components/my_textfield.dart';
 import 'package:the_rentz/components/square_button.dart';
+import 'package:the_rentz/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -145,7 +146,10 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SquareButton(imagePath: 'assets/images/google (1).png')
+                  SquareButton(
+                    onTap: () => AuthService().signInWithGoogle(),
+                    imagePath: 'assets/images/google (1).png'
+                    )
                 ],
               ),
           
