@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_rentz/components/my_button.dart';
-import 'package:the_rentz/components/my_textfield.dart';
-import 'package:the_rentz/components/square_button.dart';
-import 'package:the_rentz/pages/forgot_pw_page.dart';
+import 'package:the_rentz/widgets/my_button.dart';
+import 'package:the_rentz/widgets/my_textfield.dart';
+import 'package:the_rentz/widgets/square_button.dart';
 import 'package:the_rentz/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,42 +20,40 @@ class _LoginPageState extends State<LoginPage> {
 
   //sign user in
   void signUserIn() async {
-
     showDialog(
-      context: context, 
+      context: context,
+      barrierDismissible: false,
       builder: (context) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return Center(child: CircularProgressIndicator());
       },
     );
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text, 
+        email: emailController.text,
         password: passwordController.text,
       );
-      Navigator.pop(context);
+
+      if (mounted) Navigator.of(context).pop(); // ปิด loading
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
+      if (mounted) Navigator.of(context).pop();
       showErrorMessage(e.code);
     }
   }
-    void showErrorMessage(String message) {
-      showDialog(
-        context: context, 
-        builder: (context) {
-          return AlertDialog(
-            title: Center(
-              child: Text(
-                message,
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          );
-        }
-      );
-    }
-    
+
+  void showErrorMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(message, style: TextStyle(color: Colors.red)),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,29 +66,28 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 50),
               Text(
                 "Welcome!",
-                style: TextStyle(color: Colors.grey[900],
-                fontSize: 40),
+                style: TextStyle(color: Colors.grey[900], fontSize: 40),
               ),
               SizedBox(height: 25),
-              
+
               //email
               MyTextField(
                 controller: emailController,
                 hintText: 'Email',
                 obscureText: false,
               ),
-          
+
               SizedBox(height: 15),
-          
+
               //password
               MyTextField(
                 controller: passwordController,
                 hintText: 'Password',
                 obscureText: true,
               ),
-          
+
               SizedBox(height: 10),
-          
+
               //forgot password?
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 35),
@@ -117,57 +113,48 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-          
+
               SizedBox(height: 25),
-          
-              MyButton(
-                onTap: signUserIn,
-                text: "Sign In",
-              ),
-          
+
+              MyButton(onTap: signUserIn, text: "Sign In"),
+
               SizedBox(height: 50),
-          
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
                   children: [
                     Expanded(
-                      child: Divider(
-                        thickness: 0.5,
-                        color: Colors.grey[400],
-                      ),
+                      child: Divider(thickness: 0.5, color: Colors.grey[400]),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Text(
                         'Or Sign In with',
                         style: TextStyle(color: Colors.grey[700]),
-                        ),
+                      ),
                     ),
                     Expanded(
-                      child: Divider(
-                        thickness: 0.5,
-                        color: Colors.grey[400],
-                      ),
+                      child: Divider(thickness: 0.5, color: Colors.grey[400]),
                     ),
                   ],
                 ),
               ),
-          
-              SizedBox(height: 50,),
-          
+
+              SizedBox(height: 50),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SquareButton(
                     onTap: () => AuthService().signInWithGoogle(),
-                    imagePath: 'assets/images/google (1).png'
-                    )
+                    imagePath: 'assets/images/google (1).png',
+                  ),
                 ],
               ),
-          
-              SizedBox(height: 50,),
-          
+
+              SizedBox(height: 50),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -175,9 +162,9 @@ class _LoginPageState extends State<LoginPage> {
                     'Don\'t have an account?',
                     style: TextStyle(color: Colors.grey[700]),
                   ),
-                  SizedBox(width: 4,),
+                  SizedBox(width: 4),
                   GestureDetector(
-                    onTap : widget.onTap,
+                    onTap: widget.onTap,
                     child: Text(
                       'Sign Up',
                       style: TextStyle(
@@ -185,13 +172,13 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                  )
+                  ),
                 ],
-              )
+              ),
             ],
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 }

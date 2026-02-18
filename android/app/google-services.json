@@ -12,7 +12,20 @@
           "package_name": "com.example.the_rentz"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "897694489294-hsplaakgp99ovtstqtr04m5rkdjh3npg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.the_rentz",
+            "certificate_hash": "233a23741c89318133a3c9421b7e981d5baa7b1d"
+          }
+        },
+        {
+          "client_id": "897694489294-223i7b289rtgbeqijiipotv1ivmojp5h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDZ2eKg0ET3wrsCAoVYUK9gJKN2VqcrhRc"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897694489294-223i7b289rtgbeqijiipotv1ivmojp5h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "897694489294-0jbh890i5jo15k5tih43v4cif4qo33mo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.theRentz"
+              }
+            }
+          ]
         }
       }
     }
