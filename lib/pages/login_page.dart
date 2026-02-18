@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:the_rentz/components/my_button.dart';
 import 'package:the_rentz/components/my_textfield.dart';
 import 'package:the_rentz/components/square_button.dart';
+import 'package:the_rentz/pages/forgot_pw_page.dart';
 import 'package:the_rentz/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -97,9 +98,21 @@ class _LoginPageState extends State<LoginPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: Colors.grey[500]),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return ForgotPasswordPage();
+                        })
+                        );
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontWeight: FontWeight.w700
+                          ),
+                      ),
                     ),
                   ],
                 ),
