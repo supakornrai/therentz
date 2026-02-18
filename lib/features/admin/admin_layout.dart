@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:the_rentz/features/customer/favorite_view.dart';
+import 'package:the_rentz/features/admin/account_view.dart';
+import 'package:the_rentz/features/admin/inbox_admin_view.dart';
+import 'package:the_rentz/features/admin/request_view.dart';
 import 'package:the_rentz/features/customer/home_view.dart';
-import 'package:the_rentz/features/customer/inbox_view.dart';
 import 'package:the_rentz/features/customer/profile_view.dart';
 import 'package:the_rentz/widgets/bottom_nav.dart';
 
@@ -21,16 +22,17 @@ class _AdminLayoutState extends State<AdminLayout>
 
   final pages = [
     HomeView(),
-    FavoriteView(),
-    InboxView(),  
+    AccountView(),
+    RequestView(),
+    InboxAdminView(),  
     ProfileView(),
   ];
 
   final navItems = [
     NavItem(Icons.grid_view, 'Home'),
-    NavItem(Icons.account_balance, 'Account'),
-    NavItem(Icons.request_page, 'Request'),
-    NavItem(Icons.inbox, 'inbox'),
+    NavItem(Icons.edit_square, 'Account'),
+    NavItem(Icons.priority_high, 'Request'),
+    NavItem(Icons.mail, 'inbox'),
     NavItem(Icons.person, 'Profile'),
   ];
 

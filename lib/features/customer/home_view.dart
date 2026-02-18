@@ -7,47 +7,52 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return Scaffold(body: Center(child: Text("User not logged in")));
+    }
 
     return Scaffold(
-      backgroundColor:  Color(0xFFF5F7FA),
-      body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
+      backgroundColor: Color(0xFFF5F7FA),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .get(),
+            .snapshots(),
         builder: (context, snapshot) {
-
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return  Center(
-              child: CircularProgressIndicator(),
-            );
+            return Center(child: CircularProgressIndicator());
           }
 
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return  Center(
-              child: Text("User document not found"),
-            );
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          final data =
-              snapshot.data!.data() as Map<String, dynamic>;
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.data!.exists) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+          final username = data['username'] ?? 'No Name';
 
           return Padding(
-            padding:  EdgeInsets.fromLTRB(16, 48, 16, 16),
+            padding: EdgeInsets.fromLTRB(16, 48, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                // Search box
                 Container(
                   height: 48,
-                  padding:  EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child:  TextField(
+                  child: TextField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.search),
                       hintText: 'Search',
@@ -56,18 +61,16 @@ class HomeView extends StatelessWidget {
                   ),
                 ),
 
-                 SizedBox(height: 16),
+                SizedBox(height: 16),
 
-                 Text(
+                Text(
                   "Welcome Back!",
                   style: TextStyle(fontSize: 22, color: Colors.black54),
                 ),
 
                 Text(
-                  data['username'] ?? 'No Name',
-                  style:  TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold),
+                  username,
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

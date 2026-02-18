@@ -31,14 +31,20 @@ class AuthPage extends StatelessWidget {
                 .snapshots(),
             builder: (context, roleSnapshot) {
               if (roleSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (roleSnapshot.hasError) {
+                return Center(child: Text("Error: ${roleSnapshot.error}"));
               }
 
               if (!roleSnapshot.hasData || !roleSnapshot.data!.exists) {
-                return Center(child: Text("Loading user data..."));
+                return const Center(child: CircularProgressIndicator());
               }
 
-              final role = roleSnapshot.data!.get('role');
+              
+              final data = roleSnapshot.data!.data() as Map<String, dynamic>;
+              final role = data['role'] ?? 'customer';
 
               if (role == 'admin') {
                 return AdminLayout();

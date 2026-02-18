@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_rentz/widgets/my_button.dart';
-import 'package:the_rentz/widgets/my_textfield.dart';
-import 'package:the_rentz/widgets/square_button.dart';
 import 'package:the_rentz/services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
-  RegisterPage({super.key, required this.onTap});
+
+  const RegisterPage({super.key, required this.onTap});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -20,136 +18,144 @@ class _RegisterPageState extends State<RegisterPage> {
   final userNameController = TextEditingController();
 
   void signUserUp() async {
+    // show loading
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+      builder: (_) {
+        return const Center(child: CircularProgressIndicator());
+      },
     );
 
     try {
-      //Validation
-      if (passwordController.text != confirmPasswordController.text) {
+      if (passwordController.text.trim() !=
+          confirmPasswordController.text.trim()) {
         Navigator.pop(context);
         showErrorMessage("Passwords don't match");
         return;
       }
 
-      //call AuthService for register
       await AuthService().register(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
         username: userNameController.text.trim(),
       );
 
-    //catching error
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
       showErrorMessage(_mapErrorMessage(e.code));
     } catch (e) {
-      showErrorMessage("Something went wrong");
-    }
-
-    if (mounted) Navigator.pop(context);
-  }
-
-  //fix error 
-  String _mapErrorMessage(String code) {
-    switch (code) {
-      case 'email-already-in-use':
-        return 'This email is already in use';
-      case 'weak-password':
-        return 'Password is too weak';
-      case 'invalid-email':
-        return 'Invalid email format';
-      default:
-        return 'Registration failed';
+      Navigator.pop(context);
+      showErrorMessage("Something went wrong. Please try again.");
     }
   }
 
   void showErrorMessage(String message) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Center(
-          child: Text(message, style: TextStyle(color: Colors.red)),
-        ),
-      ),
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Register Failed"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  String _mapErrorMessage(String code) {
+    switch (code) {
+      case 'email-already-in-use':
+        return "Email is already registered.";
+      case 'invalid-email':
+        return "Invalid email format.";
+      case 'weak-password':
+        return "Password must be at least 6 characters.";
+      default:
+        return "Registration failed. Please try again.";
+    }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    userNameController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 40),
 
-              Text("Sign Up", style: TextStyle(fontSize: 30)),
+              const Text(
+                "Create Account",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 30),
 
-              MyTextField(
+              TextField(
                 controller: userNameController,
-                hintText: 'Username',
-                obscureText: false,
+                decoration: const InputDecoration(hintText: "Username"),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              MyTextField(
+              TextField(
                 controller: emailController,
-                hintText: 'Email',
-                obscureText: false,
+                decoration: const InputDecoration(hintText: "Email"),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 10),
 
-              MyTextField(
+              TextField(
                 controller: passwordController,
-                hintText: 'Password',
                 obscureText: true,
+                decoration: const InputDecoration(hintText: "Password"),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              MyTextField(
+              TextField(
                 controller: confirmPasswordController,
-                hintText: 'Confirm Password',
                 obscureText: true,
+                decoration: const InputDecoration(hintText: "Confirm Password"),
               ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
-              MyButton(onTap: signUserUp, text: "Sign Up"),
-
-              SizedBox(height: 40),
-
-              //Google login
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SquareButton(
-                    onTap: () => AuthService().signInWithGoogle(),
-                    imagePath: 'assets/images/google (1).png',
-                  ),
-                ],
+              ElevatedButton(
+                onPressed: signUserUp,
+                child: const Text("Sign Up"),
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 20),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Already have an account?'),
-                  SizedBox(width: 4),
+                  const Text("Already have an account? "),
                   GestureDetector(
                     onTap: widget.onTap,
-                    child: Text(
-                      'Sign In',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+                    child: const Text(
+                      "Login now",
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
