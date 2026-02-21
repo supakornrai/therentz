@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomeView extends StatelessWidget {
-  HomeView({super.key});
+class StaffHomeView extends StatelessWidget {
+  StaffHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +25,15 @@ class HomeView extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
 
-          //for check 
+          //for check
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
-          //for check 
+          //for check
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
           }
-          //for check 
+          //for check
           if (!snapshot.data!.exists) {
             return Center(child: CircularProgressIndicator());
           }
