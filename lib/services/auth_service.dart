@@ -22,7 +22,10 @@ class AuthService {
       'email': email.trim(),
       'username': username.trim(),
       'role': 'customer',
+      'gender': '-',
+      'phone': '-',
       'createdAt': FieldValue.serverTimestamp(),
+      'pictureURL': null
     });
 
     //sent user data back
@@ -63,15 +66,16 @@ class AuthService {
     // ล็อกอินเข้า Firebase ด้วย Google credential
     final userCredential = await _auth.signInWithCredential(credential);
 
-    //check user in doc
+    //make sure that user not null
     await _ensureUserDocument(userCredential.user!);
 
     return userCredential;
   }
 
-  //ensure user doc
+  //for make sure about data's user in doc
   Future<void> _ensureUserDocument(User user) async {
     final doc = await _firestore.collection('users').doc(user.uid).get();
+
     //google sign in didn't have username and we need to create this first
     //this function will change email to username
     if (!doc.exists) {
@@ -79,6 +83,9 @@ class AuthService {
         'email': user.email,
         'username': user.displayName ?? user.email?.split('@')[0] ?? 'User',
         'role': 'customer',
+        'gender': '-',
+        'phone': '-',
+        'pictureURL' : user.photoURL,
         'createdAt': FieldValue.serverTimestamp(),
       });
     }

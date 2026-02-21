@@ -25,21 +25,24 @@ class HomeView extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
 
+          //for check 
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
-
+          //for check 
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
           }
-
+          //for check 
           if (!snapshot.data!.exists) {
             return Center(child: CircularProgressIndicator());
           }
 
+          //call username in firebase
           final data = snapshot.data!.data() as Map<String, dynamic>;
           final username = data['username'] ?? 'No Name';
 
+          //can't serch just ui
           return Padding(
             padding: EdgeInsets.fromLTRB(16, 48, 16, 16),
             child: Column(
@@ -68,6 +71,7 @@ class HomeView extends StatelessWidget {
                   style: TextStyle(fontSize: 22, color: Colors.black54),
                 ),
 
+                //print username
                 Text(
                   username,
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
