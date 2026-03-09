@@ -8,7 +8,7 @@ class AdminBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(
+      margin: EdgeInsets.symmetric(
         horizontal: 15,
         vertical: 20,
       ),
@@ -22,11 +22,11 @@ class AdminBottomNavBar extends StatelessWidget {
         ).colorScheme.tertiary, 
         tabBorderRadius: 24,
         gap: 6, 
-        padding: const EdgeInsets.symmetric(
+        padding: EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 12,
         ),
-        tabs: const [
+        tabs: [
           GButton(icon: Icons.home, text: 'Home'),
           GButton(icon: Icons.account_box, text: 'Account'),
           GButton(icon: Icons.warning_rounded, text: 'Request'),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:the_rentz/components/my_drawer.dart';
 import 'package:the_rentz/components/user_tile.dart';
 import 'package:the_rentz/pages/chat_page.dart';
 import 'package:the_rentz/services/auth/auth_service.dart';
@@ -93,7 +92,6 @@ class InboxPage extends StatelessWidget {
         foregroundColor: Colors.grey,
         elevation: 0,
       ),
-      drawer: MyDrawer(),
       body: _buildUserList(),
     );
   }

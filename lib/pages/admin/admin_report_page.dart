@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:the_rentz/components/my_drawer.dart';
 
 class AdminReportsPage extends StatelessWidget {
   const AdminReportsPage({super.key});
@@ -15,7 +14,6 @@ class AdminReportsPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
-      drawer: MyDrawer(),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("Reports")

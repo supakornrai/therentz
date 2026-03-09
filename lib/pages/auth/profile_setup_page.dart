@@ -14,17 +14,16 @@ class ProfileSetupPage extends StatefulWidget {
 
 class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final _usernameController = TextEditingController();
+  final _firstnameController = TextEditingController();
+  final _lastnameController = TextEditingController();
   final _ageController = TextEditingController();
   
-  AppRole _selectedRole = AppRole.user;
   String _selectedGender = 'Male';
-  
-  final List<AppRole> _roles = [AppRole.user, AppRole.staff];
   final List<String> _genders = ['Male', 'Female', 'Other'];
 
   void saveProfile() async {
   try {
-    if (_usernameController.text.isEmpty || _ageController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || _firstnameController.text.isEmpty || _lastnameController.text.isEmpty || _ageController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields"))
       );
@@ -34,7 +33,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     await AuthService().updateAdditionalProfileInfo(
       uid: widget.uid,
       username: _usernameController.text.trim(),
-      role: _selectedRole,
+      firstname: _firstnameController.text.trim(),
+      lastname: _lastnameController.text.trim(),
+      role: AppRole.user,
       age: int.parse(_ageController.text.trim()),
       gender: _selectedGender,
       imageUrl: "", 
@@ -61,16 +62,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
 
               MyTextField(controller: _usernameController, hintText: "Username", obscureText: false),
               const SizedBox(height: 15),
-              
-              MyTextField(controller: _ageController, hintText: "Age", obscureText: false),
+
+              MyTextField(controller: _firstnameController, hintText: "First Name", obscureText: false),
               const SizedBox(height: 15),
 
-              DropdownButtonFormField<AppRole>(
-                initialValue: _selectedRole,
-                decoration: InputDecoration(labelText: "Select Role", filled: true, fillColor: Theme.of(context).colorScheme.secondary),
-                items: _roles.map((r) => DropdownMenuItem(value: r, child: Text(r.name.toUpperCase()))).toList(),
-                onChanged: (val) => setState(() => _selectedRole = val!),
-              ),
+              MyTextField(controller: _lastnameController, hintText: "Last Name", obscureText: false),
+              const SizedBox(height: 15),
+              
+              MyTextField(controller: _ageController, hintText: "Age", obscureText: false),
               const SizedBox(height: 15),
 
               DropdownButtonFormField<String>(

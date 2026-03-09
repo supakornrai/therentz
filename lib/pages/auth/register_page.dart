@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:the_rentz/components/my_button.dart';
 import 'package:the_rentz/components/my_textfield.dart';
 import 'package:the_rentz/components/square_button.dart';
-import 'package:the_rentz/enum.dart';
 import 'package:the_rentz/services/auth/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -21,9 +20,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   final TextEditingController _confirmPasswordController = TextEditingController();
-
-  final List<AppRole> roles = [AppRole.user, AppRole.staff];
-  AppRole selectedRole = AppRole.user;
 
   // register method
   void register(BuildContext context) async {

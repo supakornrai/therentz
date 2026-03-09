@@ -5,7 +5,7 @@ import 'package:the_rentz/pages/admin/admin_report_page.dart';
 import 'package:the_rentz/pages/inbox_page.dart';
 import 'package:the_rentz/pages/profile_page.dart';
 import 'package:the_rentz/services/auth/auth_service.dart';
-import 'package:the_rentz/components/admin_bottom_nav_bar.dart'; 
+import 'package:the_rentz/components/admin_bottom_nav_bar.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});

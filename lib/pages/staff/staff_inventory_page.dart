@@ -2,7 +2,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_rentz/components/my_drawer.dart';
 
 class StaffInventoryPage extends StatelessWidget {
   const StaffInventoryPage({super.key});
@@ -18,7 +17,6 @@ class StaffInventoryPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
-      drawer: MyDrawer(),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("Cars")

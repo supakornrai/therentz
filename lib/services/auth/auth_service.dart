@@ -72,14 +72,14 @@ class AuthService {
           .collection("Users")
           .doc(userCredential.user!.uid)
           .get();
-     if (userDoc.exists) {
-      final data = userDoc.data() as Map<String, dynamic>;
-      
-      if (data['isSuspended'] == true) {
-        await _auth.signOut(); 
-        throw Exception("This account has been suspended by the Admin.");
+      if (userDoc.exists) {
+        final data = userDoc.data() as Map<String, dynamic>;
+
+        if (data['isSuspended'] == true) {
+          await _auth.signOut();
+          throw Exception("This account has been suspended by the Admin.");
+        }
       }
-    }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
@@ -111,9 +111,9 @@ class AuthService {
     }
   }
 
-  //logout
   Future<void> signOut() async {
-    return await _auth.signOut();
+    await GoogleSignIn().signOut();
+    await _auth.signOut();
   }
 
   //fetch user data
@@ -146,6 +146,8 @@ class AuthService {
   Future<void> updateAdditionalProfileInfo({
     required String uid,
     required String username,
+    required String firstname,
+    required String lastname,
     required int age,
     required AppRole role,
     required String gender,
@@ -153,6 +155,8 @@ class AuthService {
   }) async {
     await _db.collection("Users").doc(uid).set({
       'Username': username,
+      'Firstname': firstname,
+      'Lastname': lastname,
       'Role': role.name,
       'Age': age,
       'Gender': gender,

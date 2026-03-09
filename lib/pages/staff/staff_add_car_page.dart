@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:the_rentz/components/my_drawer.dart';
 import 'package:the_rentz/components/my_textfield.dart';
 
 class StaffAddCarPage extends StatefulWidget {
@@ -90,7 +89,6 @@ class _AddCarPageState extends State<StaffAddCarPage> {
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
-      drawer: MyDrawer(),
       body: _isLoading 
         ? const Center(child: CircularProgressIndicator())
         : SingleChildScrollView(

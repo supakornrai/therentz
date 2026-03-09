@@ -1,4 +1,3 @@
-// Update staff_home_page.dart
 import 'package:flutter/material.dart';
 import 'package:the_rentz/components/staff_bottom_nav_bar.dart';
 import 'package:the_rentz/pages/inbox_page.dart';
