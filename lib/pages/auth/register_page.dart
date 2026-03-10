@@ -86,7 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 SizedBox(height: 10),
 
-                // Confirm Password Input
                 MyTextField(
                   controller: _confirmPasswordController,
                   labelText: "Confirm Password",
@@ -96,12 +95,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 SizedBox(height: 25),
 
-                // Submit Button
-                MyButton(onTap: () => register(context), text: 'Register'),
 
+                MyButton(onTap: () => register(context), text: 'Register'),
                 SizedBox(height: 25),
 
-                // Login Route Toggle
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
