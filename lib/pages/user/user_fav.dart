@@ -97,6 +97,8 @@ class UserFavPage extends StatelessWidget {
                           Text(
                             "${car["Brand"]} ${car["Model"]}",
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                           SizedBox(height: 4),
                           Text(

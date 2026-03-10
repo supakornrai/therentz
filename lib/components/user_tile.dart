@@ -52,6 +52,8 @@ class UserTile extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   Text(
                     text,
@@ -59,6 +61,8 @@ class UserTile extends StatelessWidget {
                       fontSize: 12,
                       color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.5),
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),

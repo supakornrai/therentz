@@ -55,6 +55,7 @@ class MyTextBox extends StatelessWidget {
               color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.9),
               fontWeight: FontWeight.w500,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

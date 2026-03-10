@@ -42,7 +42,7 @@ class UserModel {
       'Lastname': lastName,
       'Email': email,
       'Phone number': phoneNumber,
-      'Profile Image': profileImage,
+      'Profile_Image': profileImage,
       'Role': role.name,
       'Age': age,
       'Gender': gender,
@@ -65,7 +65,7 @@ class UserModel {
       lastName: map['Lastname'] ?? '',
       email: map['Email'] ?? '',
       phoneNumber: map['Phone number'] ?? '',
-      profileImage: map['Profile Image'] ?? '',
+      profileImage: map['Profile_Image'] ?? '',
       role: AppRole.values.firstWhere(
         (e) => e.name == map['Role'],
         orElse: () => AppRole.user,

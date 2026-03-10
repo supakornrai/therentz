@@ -126,7 +126,7 @@ class AuthService {
       "Lastname": lastname,
       "Age": age,
       "Gender": gender,
-      "ProfileImage": imageUrl,
+      "Profile_Image": imageUrl,
       "Phone number" : phoneNumber,
       "Role": role.name,
 

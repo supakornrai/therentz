@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:the_rentz/models/booking_model.dart';
 import 'package:the_rentz/services/booking_service.dart';
+import 'package:the_rentz/services/location_service.dart';
 
 class UserBookingListPage extends StatelessWidget {
   UserBookingListPage({super.key});
@@ -132,6 +133,21 @@ class UserBookingListPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: Text("Cancel Booking", style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+          if (booking.status == 'reserved' || booking.status == 'completed') ...[
+            SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () => LocationService.openDealershipLocation(),
+              icon: Icon(Icons.location_on_rounded, size: 18),
+              label: Text("View Location", style: TextStyle(fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                elevation: 0,
+                minimumSize: Size(double.infinity, 45),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
           ],
         ],

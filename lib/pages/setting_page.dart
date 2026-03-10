@@ -93,6 +93,8 @@ class SettingPage extends StatelessWidget {
                       color: Theme.of(context).colorScheme.primary,
                       letterSpacing: 1.0,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -101,6 +103,8 @@ class SettingPage extends StatelessWidget {
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),

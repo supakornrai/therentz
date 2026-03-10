@@ -6,7 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:the_rentz/services/cloudinary_service.dart';
 
 class StaffAddCarPage extends StatefulWidget {
-   StaffAddCarPage({super.key});
+  final Map<String, dynamic>? car;
+  StaffAddCarPage({super.key, this.car});
 
   @override
   State<StaffAddCarPage> createState() => _StaffAddCarPageState();
@@ -26,6 +27,19 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
 
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.car != null) {
+      _brandController.text = widget.car!["Brand"] ?? "";
+      _modelController.text = widget.car!["Model"] ?? "";
+      _yearController.text = widget.car!["Year"]?.toString() ?? "";
+      _mileController.text = widget.car!["Mileage"]?.toString() ?? "";
+      _descriptionController.text = widget.car!["Description"] ?? "";
+      _priceController.text = widget.car!["Price"]?.toString() ?? "";
+    }
+  }
+
   bool get _isFormValid {
     return _brandController.text.isNotEmpty &&
         _modelController.text.isNotEmpty &&
@@ -33,7 +47,7 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
         _mileController.text.isNotEmpty &&
         _descriptionController.text.isNotEmpty &&
         _priceController.text.isNotEmpty &&
-        _selectedImages.isNotEmpty;
+        (_selectedImages.isNotEmpty || (widget.car != null && (widget.car!["Images"] as List?)?.isNotEmpty == true));
   }
 
   Future<void> _takePhoto() async {
@@ -66,13 +80,17 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
     try {
       List<String> imageUrls = [];
 
+      // Keep existing images if editing
+      if (widget.car != null && widget.car!["Images"] != null) {
+        imageUrls.addAll(List<String>.from(widget.car!["Images"]));
+      }
+
       for (var image in _selectedImages) {
         String url = await uploadToCloudinary(image);
-
         imageUrls.add(url);
       }
 
-      await FirebaseFirestore.instance.collection("Cars").add({
+      final carData = {
         "Brand": _brandController.text.trim(),
         "Model": _modelController.text.trim(),
         "Year": int.tryParse(_yearController.text) ?? 0,
@@ -80,19 +98,40 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
         "Description": _descriptionController.text.trim(),
         "Price": double.tryParse(_priceController.text) ?? 0,
         "Images": imageUrls,
-        "Status": "available",
+        "Status": widget.car?["Status"] ?? "available",
         "Timestamp": FieldValue.serverTimestamp(),
-      });
+      };
+
+      if (widget.car != null && widget.car!["id"] != null) {
+        // UPDATE
+        await FirebaseFirestore.instance.collection("Cars").doc(widget.car!["id"]).update(carData);
+      } else {
+        // ADD NEW
+        await FirebaseFirestore.instance.collection("Cars").add(carData);
+      }
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar( SnackBar(content: Text("Car listed successfully")));
+      ).showSnackBar(SnackBar(content: Text(widget.car != null ? "Car updated successfully" : "Car listed successfully")));
+      
+      if (widget.car != null) {
+        Navigator.pop(context); // Go back after editing
+      } else {
+        // Clear form if adding new
+        _selectedImages.clear();
+        _brandController.clear();
+        _modelController.clear();
+        _yearController.clear();
+        _mileController.clear();
+        _descriptionController.clear();
+        _priceController.clear();
+      }
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Upload failed: $e")));
+      ).showSnackBar(SnackBar(content: Text("Action failed: $e")));
     }
 
     setState(() {
@@ -117,29 +156,29 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text("List New Car"),
+        title: Text(widget.car != null ? "Edit Car" : "List New Car"),
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Vehicle Photos",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Container(
                     height: 180,
                     decoration: BoxDecoration(
@@ -154,7 +193,7 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                               children: [
                                 Icon(Icons.add_a_photo_rounded,
                                     size: 40, color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8),
                                 Text(
                                   "No photos selected",
                                   style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
@@ -164,13 +203,13 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                           )
                         : ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(12),
                             itemCount: _selectedImages.length,
                             itemBuilder: (context, index) {
                               return Stack(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(right: 12),
+                                    padding: EdgeInsets.only(right: 12),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(16),
                                       child: Image.file(
@@ -187,12 +226,12 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                                     child: GestureDetector(
                                       onTap: () => _removeImage(index),
                                       child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
+                                        padding: EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
                                           color: Colors.red,
                                           shape: BoxShape.circle,
                                         ),
-                                        child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
+                                        child: Icon(Icons.close_rounded, color: Colors.white, size: 16),
                                       ),
                                     ),
                                   ),
@@ -201,11 +240,11 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                             },
                           ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: _takePhoto,
-                    icon: const Icon(Icons.camera_alt_rounded),
-                    label: const Text("Take Photo"),
+                    icon: Icon(Icons.camera_alt_rounded),
+                    label: Text("Take Photo"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       foregroundColor: Theme.of(context).colorScheme.primary,
@@ -213,12 +252,12 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  const Text(
+                  SizedBox(height: 32),
+                  Text(
                     "Vehicle Details",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   _buildPremiumTextField(context, _brandController, "Brand", Icons.branding_watermark_rounded),
                   _buildPremiumTextField(context, _modelController, "Model", Icons.directions_car_rounded),
                   Row(
@@ -226,7 +265,7 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                       Expanded(
                           child: _buildPremiumTextField(context, _yearController, "Year", Icons.calendar_today_rounded,
                               isNumber: true)),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       Expanded(
                           child: _buildPremiumTextField(context, _mileController, "Mileage", Icons.speed_rounded,
                               isNumber: true)),
@@ -234,23 +273,23 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
                   ),
                   _buildPremiumTextField(context, _descriptionController, "Description", Icons.info_outline_rounded),
                   _buildPremiumTextField(context, _priceController, "Price (฿)", Icons.payments_rounded, isNumber: true),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: _isFormValid ? _uploadCar : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 60),
+                      minimumSize: Size(double.infinity, 60),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       elevation: 8,
                       shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                     ),
                     child: Text(
-                      _isLoading ? "Uploading..." : "List Car Now",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      _isLoading ? "Processing..." : (widget.car != null ? "Save Changes" : "List Car Now"),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
                 ],
               ),
             ),
@@ -260,7 +299,7 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
   Widget _buildPremiumTextField(BuildContext context, TextEditingController controller, String label, IconData icon,
       {bool isNumber = false}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
@@ -284,7 +323,7 @@ class _StaffAddCarPageState extends State<StaffAddCarPage> {
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 20),
+          contentPadding: EdgeInsets.symmetric(vertical: 20),
         ),
       ),
     );

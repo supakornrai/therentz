@@ -105,5 +105,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>googlemaps</string>
+		<string>comgooglemaps</string>
+		<string>waze</string>
+		<string>comgooglemaps-x-callback</string>
+		<string>geo</string>
+		<string>maps</string>
+		<string>https</string>
+		<string>http</string>
+	</array>
 </dict>
 </plist>

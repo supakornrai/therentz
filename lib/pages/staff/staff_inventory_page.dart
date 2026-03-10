@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:the_rentz/pages/car_detail_page.dart';
 
 class StaffInventoryPage extends StatelessWidget {
   const StaffInventoryPage({super.key});
@@ -43,7 +44,17 @@ class StaffInventoryPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final data = cars[index].data() as Map<String, dynamic>;
               data["id"] = cars[index].id;
-              return _carTile(context, data);
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CarDetailPage(car: data, isStaff: true),
+                    ),
+                  );
+                },
+                child: _carTile(context, data),
+              );
             },
           );
         },
@@ -133,72 +144,16 @@ class StaffInventoryPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => _showEditDescriptionDialog(context, data),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(Icons.edit_note_rounded, color: Theme.of(context).colorScheme.primary),
-                    ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
                   ),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showEditDescriptionDialog(BuildContext context, Map<String, dynamic> data) {
-    final TextEditingController descriptionController = TextEditingController(text: data["Description"] ?? "");
-    String carId = data["id"];
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text("Edit Description"),
-        content: TextField(
-          controller: descriptionController,
-          maxLines: 5,
-          style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-          decoration: InputDecoration(
-            hintText: "Enter vehicle description...",
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await FirebaseFirestore.instance.collection("Cars").doc(carId).update({
-                "Description": descriptionController.text.trim(),
-              });
-              if (context.mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Description updated successfully")),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text("Save"),
-          ),
-        ],
       ),
     );
   }
