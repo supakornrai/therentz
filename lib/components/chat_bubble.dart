@@ -25,17 +25,17 @@ class ChatBubble extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black,
             blurRadius: 5,
-            offset: const Offset(0, 2),
+            offset:  Offset(0, 2),
           ),
         ],
         border: isCurrentUser 
             ? null 
             : Border.all(color: Theme.of(context).colorScheme.tertiary, width: 0.5),
       ),
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+      padding:  EdgeInsets.all(16),
+      margin:  EdgeInsets.symmetric(vertical: 4, horizontal: 20),
       child: Text(
         message,
         style: TextStyle(

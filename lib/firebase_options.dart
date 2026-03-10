@@ -49,7 +49,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static final FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDZ2eKg0ET3wrsCAoVYUK9gJKN2VqcrhRc',
     appId: '1:897694489294:android:48dc98bb2bd9159474ce9f',
     messagingSenderId: '897694489294',
@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'auththerentz-ffc20.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static final FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDCvxOo6XVo9mw67u8vReLgLATJRtmXG-c',
     appId: '1:897694489294:ios:b6241613d86fe55774ce9f',
     messagingSenderId: '897694489294',

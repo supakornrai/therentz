@@ -117,7 +117,7 @@ class ChatService extends ChangeNotifier {
         .where("participants", arrayContains: currentUser.uid)
         .snapshots()
         .asyncMap((snapshot) async {
-      // Get all unique participant IDs (excluding self)
+
       Set<String> participantIds = {};
       for (var doc in snapshot.docs) {
         List<dynamic> participants = doc['participants'] ?? [];
@@ -132,14 +132,11 @@ class ChatService extends ChangeNotifier {
 
       List<Map<String, dynamic>> chattedUsers = [];
 
-      // Fetch user data for these IDs
-      // Note: Firestore 'in' query is limited to 10-30 items depending on version. 
-      // For simplicity here, we'll fetch them individually or use a simple loop.
       for (var uid in participantIds) {
         var userDoc = await _firestore.collection('Users').doc(uid).get();
         if (userDoc.exists) {
           var userData = userDoc.data() as Map<String, dynamic>;
-          userData['Id'] = userDoc.id; // Map doesn't always have Id set
+          userData['Id'] = userDoc.id;
           chattedUsers.add(userData);
         }
       }

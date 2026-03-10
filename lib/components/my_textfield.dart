@@ -37,7 +37,7 @@ class MyTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       onChanged: onChanged,
       textInputAction: textInputAction,
-      style: const TextStyle(fontSize: 18),
+      style: TextStyle(fontSize: 18),
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,

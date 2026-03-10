@@ -46,7 +46,7 @@ class SettingPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EvaluationPage()),
+                  MaterialPageRoute(builder: (context) => EvaluationPage()),
                 );
               },
             ),

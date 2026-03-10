@@ -76,7 +76,7 @@ class _ChatPageState extends State<ChatPage> {
         foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,

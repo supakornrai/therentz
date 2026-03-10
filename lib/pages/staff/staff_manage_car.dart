@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class StaffManageCarPage extends StatelessWidget {
   final String carId;
 
-   StaffManageCarPage({super.key, required this.carId});
+  StaffManageCarPage({super.key, required this.carId});
 
   void deleteCar() {
     FirebaseFirestore.instance.collection("Cars").doc(carId).delete();
@@ -19,10 +19,10 @@ class StaffManageCarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title:  Text("Manage Car")),
+      appBar: AppBar(title: Text("Manage Car")),
 
       body: Padding(
-        padding:  EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
 
         child: Column(
           children: [
@@ -31,7 +31,7 @@ class StaffManageCarPage extends StatelessWidget {
                 updateStatus("available");
               },
 
-              child:  Text("Set Available"),
+              child: Text("Set Available"),
             ),
 
             ElevatedButton(
@@ -39,7 +39,7 @@ class StaffManageCarPage extends StatelessWidget {
                 updateStatus("reserved");
               },
 
-              child:  Text("Set Reserved"),
+              child: Text("Set Reserved"),
             ),
 
             ElevatedButton(
@@ -47,17 +47,17 @@ class StaffManageCarPage extends StatelessWidget {
                 updateStatus("sold");
               },
 
-              child:  Text("Set Sold"),
+              child: Text("Set Sold"),
             ),
 
-             SizedBox(height: 30),
+            SizedBox(height: 30),
 
             ElevatedButton(
               onPressed: deleteCar,
 
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
 
-              child:  Text("Delete Car"),
+              child: Text("Delete Car"),
             ),
           ],
         ),

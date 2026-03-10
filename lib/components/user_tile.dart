@@ -6,7 +6,7 @@ class UserTile extends StatelessWidget {
   final void Function()? onLongPress;
   final int unreadCount;
 
-  const UserTile({
+  UserTile({
     super.key,
     required this.text,
     required this.onTap,
@@ -23,7 +23,10 @@ class UserTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Theme.of(context).colorScheme.tertiary, width: 0.5),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.tertiary,
+            width: 0.5,
+          ),
         ),
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         padding: EdgeInsets.all(16),
@@ -48,10 +51,7 @@ class UserTile extends StatelessWidget {
                 children: [
                   Text(
                     text.split('@').first,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -59,7 +59,9 @@ class UserTile extends StatelessWidget {
                     text,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.inversePrimary.withOpacity(0.5),
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -69,14 +71,16 @@ class UserTile extends StatelessWidget {
             ),
             if (unreadCount > 0)
               Container(
-                padding: const EdgeInsets.all(8),
-                margin: const EdgeInsets.only(right: 8),
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.4),
                       blurRadius: 8,
                       offset: Offset(0, 4),
                     ),

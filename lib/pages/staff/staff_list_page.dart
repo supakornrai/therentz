@@ -13,12 +13,12 @@ class StaffListPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text("Customer Bookings"),
+        title: Text("Customer Bookings"),
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
@@ -28,7 +28,7 @@ class StaffListPage extends StatelessWidget {
         stream: _bookingService.getAllBookings(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           final bookings = snapshot.data ?? [];
@@ -39,15 +39,15 @@ class StaffListPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.event_busy_rounded, size: 80, color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
-                  const SizedBox(height: 16),
-                  const Text("No bookings yet.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  SizedBox(height: 16),
+                  Text("No bookings yet.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 ],
               ),
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             itemCount: bookings.length,
             itemBuilder: (context, index) {
               final booking = bookings[index];
@@ -65,8 +65,8 @@ class StaffListPage extends StatelessWidget {
     if (booking.status == 'cancelled') statusColor = Colors.red;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(24),
@@ -75,7 +75,7 @@ class StaffListPage extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -88,11 +88,11 @@ class StaffListPage extends StatelessWidget {
               Expanded(
                 child: Text(
                   "${booking.carBrand} ${booking.carModel}",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -109,11 +109,11 @@ class StaffListPage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Icon(Icons.person_outline_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 booking.userName,
                 style: TextStyle(
@@ -124,11 +124,11 @@ class StaffListPage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             children: [
               Icon(Icons.calendar_today_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 DateFormat('dd MMM yyyy, HH:mm').format(booking.bookingDate),
                 style: TextStyle(
@@ -139,7 +139,7 @@ class StaffListPage extends StatelessWidget {
             ],
           ),
           if (booking.status == 'reserved') ...[
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -153,13 +153,13 @@ class StaffListPage extends StatelessWidget {
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text("Complete", style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text("Complete", style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => _bookingService.updateBookingStatus(
@@ -169,11 +169,11 @@ class StaffListPage extends StatelessWidget {
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red, width: 1),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: BorderSide(color: Colors.red, width: 1),
+                      padding: EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text("Cancel", style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text("Cancel", style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

@@ -3,7 +3,7 @@ import 'package:the_rentz/pages/auth/login_page.dart';
 import 'package:the_rentz/pages/auth/register_page.dart';
 
 class LoginOrRegister extends StatefulWidget {
-  const LoginOrRegister({super.key});
+  LoginOrRegister({super.key});
 
   @override
   State<LoginOrRegister> createState() => _LoginOrRegisterState();

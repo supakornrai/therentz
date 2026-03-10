@@ -8,20 +8,16 @@ import 'package:the_rentz/pages/user/user_home_page.dart';
 import 'package:the_rentz/services/auth/login_or_register.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
-
 
         if (!snapshot.hasData) {
           return LoginOrRegister();
@@ -36,9 +32,7 @@ class AuthGate extends StatelessWidget {
               .snapshots(),
           builder: (context, userSnapshot) {
             if (userSnapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
+              return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
 
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {

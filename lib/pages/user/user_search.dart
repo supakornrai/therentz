@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:the_rentz/models/booking_model.dart';
 import 'package:the_rentz/pages/chat_page.dart';
 import 'package:the_rentz/pages/user/user_booking_list_page.dart';
-import 'package:the_rentz/services/booking_service.dart';
 import 'package:the_rentz/pages/car_detail_page.dart';
 
 enum SortType { none, priceLow, priceHigh, yearNew, yearOld }
@@ -213,7 +210,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
 
             SizedBox(height: 5),
 
-            /// CAR LIST
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -233,7 +229,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
                     return data;
                   }).toList();
 
-                  /// FILTER
                   cars = cars.where((car) {
                     String brand = (car["Brand"] ?? "").toLowerCase();
                     String model = (car["Model"] ?? "").toLowerCase();
@@ -278,7 +273,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              /// IMAGE + OVERLAYS
                               Stack(
                                 children: [
                                   GestureDetector(
@@ -311,7 +305,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
                                           ),
                                   ),
 
-                                  /// FAVORITE BUTTON
                                   Positioned(
                                     right: 12,
                                     top: 12,
@@ -351,7 +344,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
                                     ),
                                   ),
 
-                                  /// PRICE TAG
                                   Positioned(
                                     left: 12,
                                     bottom: 12,
@@ -379,7 +371,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
                                 ],
                               ),
 
-                              /// INFO
                               Padding(
                                 padding: EdgeInsets.all(20),
                                 child: Column(
@@ -404,10 +395,9 @@ class _UserSearchPageState extends State<UserSearchPage> {
                                         Icon(
                                           Icons.arrow_forward_ios_rounded,
                                           size: 16,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withOpacity(0.5),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
                                         ),
                                       ],
                                     ),

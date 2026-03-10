@@ -25,7 +25,7 @@ class _AdminManageAccountsState extends State<AdminManageAccounts> {
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
@@ -54,7 +54,7 @@ class _AdminManageAccountsState extends State<AdminManageAccounts> {
                     contentPadding: EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Text(
@@ -144,8 +144,8 @@ Widget _buildUserTile(
   bool isSuspended = data['isSuspended'] ?? false;
 
   return Container(
-    margin: const EdgeInsets.only(bottom: 20),
-    padding: const EdgeInsets.all(20),
+    margin: EdgeInsets.only(bottom: 20),
+    padding: EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.secondary,
       borderRadius: BorderRadius.circular(24),
@@ -154,7 +154,7 @@ Widget _buildUserTile(
         BoxShadow(
           color: Colors.black.withOpacity(0.05),
           blurRadius: 10,
-          offset: const Offset(0, 4),
+          offset: Offset(0, 4),
         ),
       ],
     ),
@@ -199,7 +199,7 @@ Widget _buildUserTile(
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: (role == 'staff' ? Colors.orange : Colors.blue).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
@@ -216,7 +216,7 @@ Widget _buildUserTile(
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         Row(
           children: [
             Expanded(
@@ -235,9 +235,9 @@ Widget _buildUserTile(
               ),
             ),
             if (isSuspended) ...[
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),

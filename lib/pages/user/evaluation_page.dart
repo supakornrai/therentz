@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:the_rentz/services/chat/chat_service.dart';
 
 class EvaluationPage extends StatefulWidget {
-  const EvaluationPage({super.key});
+  EvaluationPage({super.key});
 
   @override
   State<EvaluationPage> createState() => _EvaluationPageState();
@@ -25,7 +25,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   void _submitTentEvaluation() async {
     if (_tentCommentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a comment")),
+        SnackBar(content: Text("Please enter a comment")),
       );
       return;
     }
@@ -42,7 +42,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
       _tentCommentController.clear();
       setState(() => _tentRating = 5);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Showroom evaluation submitted!")),
+        SnackBar(content: Text("Showroom evaluation submitted!")),
       );
     }
   }
@@ -50,14 +50,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
   void _submitStaffEvaluation() async {
     if (_selectedStaffId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a staff member")),
+        SnackBar(content: Text("Please select a staff member")),
       );
       return;
     }
 
     if (_staffCommentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a comment")),
+        SnackBar(content: Text("Please enter a comment")),
       );
       return;
     }
@@ -79,7 +79,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
         _selectedStaffEmail = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Staff evaluation submitted!")),
+        SnackBar(content: Text("Staff evaluation submitted!")),
       );
     }
   }
@@ -89,19 +89,19 @@ class _EvaluationPageState extends State<EvaluationPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text("Evaluation"),
+        title: Text("Evaluation"),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           children: [
             // SHOWROOM SECTION
@@ -116,17 +116,17 @@ class _EvaluationPageState extends State<EvaluationPage> {
               onSubmit: _submitTentEvaluation,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // STAFF SECTION
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: Theme.of(context).colorScheme.tertiary, width: 0.5),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -141,14 +141,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       letterSpacing: 1.0,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text("Rate individual service", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 4),
+                  Text("Rate individual service", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 20),
                   StreamBuilder<List<Map<String, dynamic>>>(
                     stream: _chatService.getChattedUsersStream(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator());
                       }
                       final chats = snapshot.data ?? [];
                       final staffList = chats.where((u) => u['Role'] == 'staff').toList();
@@ -235,13 +235,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
     required VoidCallback onSubmit,
   }) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Theme.of(context).colorScheme.tertiary, width: 0.5),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -256,11 +256,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
               letterSpacing: 1.0,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(subtitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
+          SizedBox(height: 4),
+          Text(subtitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          SizedBox(height: 20),
           _buildRatingStars(rating, onRatingChanged),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           TextField(
             controller: controller,
             maxLines: 3,
@@ -272,7 +272,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
               contentPadding: const EdgeInsets.all(16),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           _buildSubmitButton(onSubmit),
         ],
       ),
@@ -285,11 +285,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
-        minimumSize: const Size(double.infinity, 50),
+        minimumSize: Size(double.infinity, 50),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
       ),
-      child: const Text("Submit Evaluation", style: TextStyle(fontWeight: FontWeight.bold)),
+      child: Text("Submit Evaluation", style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 

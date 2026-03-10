@@ -21,12 +21,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: Text('Admin Dashboard'),
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
@@ -35,7 +35,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Column(
               children: [
                 TextField(
@@ -52,10 +52,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       borderRadius: BorderRadius.circular(20),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Text(
@@ -65,23 +65,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondary,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: DropdownButton<String>(
                         value: _selectedRole,
-                        underline: const SizedBox(),
+                        underline: SizedBox(),
                         dropdownColor: Theme.of(context).colorScheme.secondary,
                         items: ["All", "user", "staff"].map((role) {
                           return DropdownMenuItem(
                             value: role,
                             child: Text(
                               role.toUpperCase(),
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           );
                         }).toList(),
@@ -100,9 +100,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   .collection("Users")
                   .snapshots(),
               builder: (context, snapshot) {
-                if (snapshot.hasError) return const Center(child: Text("Error loading data"));
+                if (snapshot.hasError) return Center(child: Text("Error loading data"));
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator());
                 }
 
                 final users = snapshot.data!.docs.where((doc) {
@@ -124,7 +124,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 }).toList();
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     var userData = users[index].data() as Map<String, dynamic>;
@@ -151,8 +151,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
     String role = data['Role'] ?? 'user';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(24),
@@ -161,14 +161,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
               shape: BoxShape.circle,
@@ -179,14 +179,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
               size: 30,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   data['Username'] ?? 'User',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.5,
@@ -199,7 +199,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.4),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildRoleBadge(role),
               ],
             ),
@@ -216,7 +216,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget _buildRoleBadge(String role) {
     bool isStaff = role == "staff";
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: (isStaff ? Colors.orange : Colors.blue).withOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
