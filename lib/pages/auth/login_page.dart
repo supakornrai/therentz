@@ -4,36 +4,30 @@ import 'package:the_rentz/components/my_textfield.dart';
 import 'package:the_rentz/components/square_button.dart';
 import 'package:the_rentz/pages/auth/forgot_pw_page.dart';
 import 'package:the_rentz/services/auth/auth_service.dart';
+import 'package:the_rentz/pages/auth/profile_setup_page.dart';
 
 class LoginPage extends StatelessWidget {
-  //email & pasword controller
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  //tap to go to register page
   final void Function()? onTap;
 
   LoginPage({super.key, required this.onTap});
 
-  // login method
   void login(BuildContext context) async {
     final authService = AuthService();
 
-    //try to login
     try {
       await authService.signInWithEmailAndPassword(
         _emailController.text,
         _passwordController.text,
       );
-    }
-    //catch error
-    catch (e) {
+    } catch (e) {
       if (!context.mounted) return;
-
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text("Login Error"),
+          title: Text("Login Error"),
           content: Text(e.toString()),
         ),
       );
@@ -50,16 +44,14 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //logo
                 Icon(
                   Icons.car_rental_rounded,
                   size: 60,
                   color: Theme.of(context).colorScheme.primary,
                 ),
 
-                const SizedBox(height: 25),
+                SizedBox(height: 25),
 
-                //welcome back message
                 Text(
                   "Welcome Back!",
                   style: TextStyle(
@@ -68,60 +60,58 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                SizedBox(height: 25),
 
-                //email textfield
                 MyTextField(
                   controller: _emailController,
-                  hintText: 'Email',
+                  labelText: "Email",
+                  hintText: "Enter your email",
                   obscureText: false,
-                ),
-
-                const SizedBox(height: 10),
-
-                //pw textfield
-                MyTextField(
-                  controller: _passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
                 ),
 
                 SizedBox(height: 10),
 
-              //forgot password?
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 35),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                          return ForgotPasswordPage();
-                        })
-                        );
-                      },
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontWeight: FontWeight.w700
-                          ),
-                      ),
-                    ),
-                  ],
+                MyTextField(
+                  controller: _passwordController,
+                  labelText: "Password",
+                  hintText: "Enter your password",
+                  obscureText: true,
                 ),
-              ),
 
-                const SizedBox(height: 25),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 35),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ForgotPasswordPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                //login button
+                SizedBox(height: 25),
+
                 MyButton(onTap: () => login(context), text: 'Login'),
+                SizedBox(height: 25),
 
-                const SizedBox(height: 25),
-
-                //register??
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -147,14 +137,14 @@ class LoginPage extends StatelessWidget {
                 SizedBox(height: 50),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     children: [
                       Expanded(
                         child: Divider(thickness: 0.5, color: Colors.grey[400]),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text(
                           'Or Login with',
                           style: TextStyle(color: Colors.grey[700]),
@@ -173,7 +163,21 @@ class LoginPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SquareButton(
-                      onTap: () => AuthService().signInWithGoogle(),
+                      onTap: () async {
+                        await AuthService().signInWithGoogle();
+
+                        final user = AuthService().getCurrentUser();
+
+                        if (!context.mounted) return;
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProfileSetupPage(uid: user!.uid),
+                          ),
+                        );
+                      },
                       imagePath: 'assets/images/google (1).png',
                     ),
                   ],

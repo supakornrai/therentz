@@ -8,7 +8,7 @@ import 'package:the_rentz/services/auth/auth_service.dart';
 import 'package:the_rentz/components/admin_bottom_nav_bar.dart';
 
 class AdminHomePage extends StatefulWidget {
-  const AdminHomePage({super.key});
+  AdminHomePage({super.key});
 
   @override
   State<AdminHomePage> createState() => _AdminHomePageState();
@@ -29,11 +29,11 @@ class _AdminHomePageState extends State<AdminHomePage> {
   }
 
   final List<Widget> _pages = [
-    AdminDashboard(), 
-    AdminManageAccounts(),    
-    AdminReportsPage(),   
+    AdminDashboard(),
+    AdminManageAccounts(),
+    AdminReportsPage(),
     InboxPage(),
-    ProfliePage(),
+    ProfilePage(),
   ];
 
   @override

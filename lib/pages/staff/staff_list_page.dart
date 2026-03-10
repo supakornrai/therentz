@@ -1,21 +1,185 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:the_rentz/models/booking_model.dart';
+import 'package:the_rentz/services/booking_service.dart';
 
-class StaffListPage extends StatefulWidget {
-  const StaffListPage({super.key});
+class StaffListPage extends StatelessWidget {
+  StaffListPage({super.key});
 
-  @override
-  State<StaffListPage> createState() => _StaffListPageState();
-}
+  final BookingService _bookingService = BookingService();
 
-class _StaffListPageState extends State<StaffListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('L I S T'),
-        elevation: 0,
+        title: const Text("Customer Bookings"),
         backgroundColor: Colors.transparent,
-        foregroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+        elevation: 0,
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -0.5,
+        ),
+      ),
+      body: StreamBuilder<List<BookingModel>>(
+        stream: _bookingService.getAllBookings(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final bookings = snapshot.data ?? [];
+
+          if (bookings.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.event_busy_rounded, size: 80, color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+                  const SizedBox(height: 16),
+                  const Text("No bookings yet.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            itemCount: bookings.length,
+            itemBuilder: (context, index) {
+              final booking = bookings[index];
+              return _buildBookingTile(context, booking);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBookingTile(BuildContext context, BookingModel booking) {
+    Color statusColor = Colors.orange;
+    if (booking.status == 'completed') statusColor = Colors.green;
+    if (booking.status == 'cancelled') statusColor = Colors.red;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).colorScheme.tertiary, width: 0.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  "${booking.carBrand} ${booking.carModel}",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: statusColor.withOpacity(0.3), width: 1),
+                ),
+                child: Text(
+                  booking.status.toUpperCase(),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.person_outline_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                booking.userName,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.8),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.calendar_today_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                DateFormat('dd MMM yyyy, HH:mm').format(booking.bookingDate),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
+                ),
+              ),
+            ],
+          ),
+          if (booking.status == 'reserved') ...[
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _bookingService.updateBookingStatus(
+                      booking.id,
+                      booking.carId,
+                      'completed',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text("Complete", style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _bookingService.updateBookingStatus(
+                      booking.id,
+                      booking.carId,
+                      'cancelled',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red, width: 1),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text("Cancel", style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
       ),
     );
   }

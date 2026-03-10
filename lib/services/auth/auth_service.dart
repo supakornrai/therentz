@@ -5,12 +5,10 @@ import 'package:the_rentz/enum.dart';
 import 'package:the_rentz/models/user_model.dart';
 
 class AuthService {
-  // instance of auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  //get current user
   User? getCurrentUser() {
     return _auth.currentUser;
   }
@@ -18,12 +16,13 @@ class AuthService {
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
       if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
+      final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
@@ -32,23 +31,20 @@ class AuthService {
         credential,
       );
 
-      final userDoc = await _db
-          .collection("Users")
-          .doc(userCredential.user!.uid)
-          .get();
+      final uid = userCredential.user!.uid;
+
+      final userDoc = await _db.collection("Users").doc(uid).get();
 
       if (!userDoc.exists) {
         UserModel newUser = UserModel(
-          id: userCredential.user!.uid,
+          id: uid,
           email: userCredential.user!.email ?? '',
-          userName: googleUser.displayName ?? '',
+          userName: "",
           role: AppRole.user,
           createAt: DateTime.now(),
         );
-        await _db
-            .collection("Users")
-            .doc(userCredential.user!.uid)
-            .set(newUser.toJson());
+
+        await _db.collection("Users").doc(uid).set(newUser.toJson());
       }
 
       return userCredential;
@@ -57,10 +53,9 @@ class AuthService {
     }
   }
 
-  //login
   Future<UserCredential> signInWithEmailAndPassword(
     String email,
-    password,
+    String password,
   ) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -72,59 +67,82 @@ class AuthService {
           .collection("Users")
           .doc(userCredential.user!.uid)
           .get();
+
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
 
         if (data['isSuspended'] == true) {
           await _auth.signOut();
-          throw Exception("This account has been suspended by the Admin.");
+          throw Exception("This account has been suspended.");
         }
       }
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
     }
   }
 
-  //register
   Future<UserCredential> signUpWithEmailAndPassword(
     String email,
-    password,
+    String password,
   ) async {
     try {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
 
+      final uid = userCredential.user!.uid;
+
       UserModel newUser = UserModel(
-        id: userCredential.user!.uid,
+        id: uid,
         email: email,
+        userName: "",
         role: AppRole.user,
         createAt: DateTime.now(),
       );
-      await _db
-          .collection("Users")
-          .doc(userCredential.user!.uid)
-          .set(newUser.toJson());
+
+      await _db.collection("Users").doc(uid).set(newUser.toJson());
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
     }
   }
 
-  Future<void> signOut() async {
-    await GoogleSignIn().signOut();
-    await _auth.signOut();
+  Future<void> updateAdditionalProfileInfo({
+    required String uid,
+    required String username,
+    required String firstname,
+    required String lastname,
+    required int age,
+    required String phoneNumber,
+    required AppRole role,
+    required String gender,
+    required String imageUrl,
+  }) async {
+    await _db.collection("Users").doc(uid).set({
+      "Username": username,
+      "Firstname": firstname,
+      "Lastname": lastname,
+      "Age": age,
+      "Gender": gender,
+      "ProfileImage": imageUrl,
+      "Phone number" : phoneNumber,
+      "Role": role.name,
+
+      "updatedAt": FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
   }
 
-  //fetch user data
   Future<UserModel?> getUserData(String uid) async {
     try {
       DocumentSnapshot doc = await _db.collection("Users").doc(uid).get();
+
       if (doc.exists) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
         return UserModel(
-          id: doc.id,
+          id: uid,
           email: data['Email'] ?? '',
           userName: data['Username'] ?? '',
           firstName: data['Firstname'] ?? '',
@@ -139,29 +157,12 @@ class AuthService {
     } catch (e) {
       print("Error fetching user data: $e");
     }
+
     return null;
   }
 
-  //for update user info
-  Future<void> updateAdditionalProfileInfo({
-    required String uid,
-    required String username,
-    required String firstname,
-    required String lastname,
-    required int age,
-    required AppRole role,
-    required String gender,
-    required String imageUrl,
-  }) async {
-    await _db.collection("Users").doc(uid).set({
-      'Username': username,
-      'Firstname': firstname,
-      'Lastname': lastname,
-      'Role': role.name,
-      'Age': age,
-      'Gender': gender,
-      'Profile Image': imageUrl,
-      'Update at': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
   }
 }

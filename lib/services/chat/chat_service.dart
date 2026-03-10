@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:the_rentz/models/message_model.dart';
 
 class ChatService extends ChangeNotifier {
-  //get instance of firestore & auth
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  //get user stream
   Stream<List<Map<String, dynamic>>> getUsersStream() {
     return _firestore.collection('Users').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -19,45 +17,19 @@ class ChatService extends ChangeNotifier {
     });
   }
 
-  //get user stream except block user
-  Stream<List<Map<String, dynamic>>> getUsersStreamExcludingBlocked() {
-    final currentUser = _auth.currentUser;
 
-    return _firestore
-        .collection('Users')
-        .doc(currentUser!.uid)
-        .collection('BlockedUsers')
-        .snapshots()
-        .asyncMap((snapshot) async {
-          final blockedUserID = snapshot.docs.map((doc) => doc.id).toList();
-
-          final userSnapshot = await _firestore.collection('Users').get();
-
-          return userSnapshot.docs
-              .where(
-                (doc) =>
-                    doc.data()['Email'] != currentUser.email &&
-                    !blockedUserID.contains(doc.id),
-              )
-              .map((doc) => doc.data())
-              .toList();
-        });
-  }
-
-  //sent message
-  Future<void> sendMessage(String receiverID, message) async {
-    //get current user
+  Future<void> sendMessage(String receiverID, String message) async {
     final String currentUserID = _auth.currentUser!.uid;
     final String currentUserEmail = _auth.currentUser!.email!;
     final Timestamp timestamp = Timestamp.now();
 
-    //create new message
     Message newMessage = Message(
       senderID: currentUserID,
       senderEmail: currentUserEmail,
       receiverID: receiverID,
       message: message,
       timestamp: timestamp,
+      isRead: false,
     );
 
     List<String> ids = [currentUserID, receiverID];
@@ -69,10 +41,14 @@ class ChatService extends ChangeNotifier {
         .doc(chatRoomID)
         .collection("message")
         .add(newMessage.toMap());
+
+    await _firestore.collection("chat_rooms").doc(chatRoomID).set({
+      'participants': FieldValue.arrayUnion([currentUserID, receiverID]),
+      'lastMessageTimestamp': timestamp,
+    }, SetOptions(merge: true));
   }
 
-  //get message
-  Stream<QuerySnapshot> getMessage(String userID, otherUserID) {
+  Stream<QuerySnapshot> getMessage(String userID, String otherUserID) {
     List<String> ids = [userID, otherUserID];
     ids.sort();
     String chatRoomID = ids.join('_');
@@ -85,7 +61,41 @@ class ChatService extends ChangeNotifier {
         .snapshots();
   }
 
-  //report
+  Future<void> markMessagesAsRead(String receiverID) async {
+    final String currentUserID = _auth.currentUser!.uid;
+    List<String> ids = [currentUserID, receiverID];
+    ids.sort();
+    String chatRoomID = ids.join('_');
+
+    final unreadMessages = await _firestore
+        .collection("chat_rooms")
+        .doc(chatRoomID)
+        .collection("message")
+        .where("receiverID", isEqualTo: currentUserID)
+        .where("isRead", isEqualTo: false)
+        .get();
+
+    for (var doc in unreadMessages.docs) {
+      await doc.reference.update({"isRead": true});
+    }
+  }
+
+  Stream<int> getUnreadCountStream(String otherUserID) {
+    final String currentUserID = _auth.currentUser!.uid;
+    List<String> ids = [currentUserID, otherUserID];
+    ids.sort();
+    String chatRoomID = ids.join('_');
+
+    return _firestore
+        .collection("chat_rooms")
+        .doc(chatRoomID)
+        .collection("message")
+        .where("receiverID", isEqualTo: currentUserID)
+        .where("isRead", isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
   Future<void> reportUser(String userID) async {
     final currentUser = _auth.currentUser;
     final report = {
@@ -97,50 +107,44 @@ class ChatService extends ChangeNotifier {
     await _firestore.collection('Reports').add(report);
   }
 
-  //block user
-  Future<void> blockUser(String userID) async {
+
+  Stream<List<Map<String, dynamic>>> getChattedUsersStream() {
     final currentUser = _auth.currentUser;
-    await _firestore
-        .collection('Users')
-        .doc(currentUser!.uid)
-        .collection('BlockedUsers')
-        .doc(userID)
-        .set({});
+    if (currentUser == null) return Stream.value([]);
 
-    notifyListeners();
-  }
-
-  //unblock user
-  Future<void> unBlockUser(String blockedUserID) async {
-    final currentUser = _auth.currentUser;
-    await _firestore
-        .collection('Users')
-        .doc(currentUser!.uid)
-        .collection('BlockedUsers')
-        .doc(blockedUserID)
-        .delete();
-  }
-
-  //get block user stream
-  Stream<List<Map<String, dynamic>>> getblockedUserStream(String userID) {
     return _firestore
-        .collection("Users")
-        .doc(userID)
-        .collection('BlockedUsers')
+        .collection("chat_rooms")
+        .where("participants", arrayContains: currentUser.uid)
         .snapshots()
         .asyncMap((snapshot) async {
-          final blockedUsersID = snapshot.docs.map((doc) => doc.id).toList();
+      // Get all unique participant IDs (excluding self)
+      Set<String> participantIds = {};
+      for (var doc in snapshot.docs) {
+        List<dynamic> participants = doc['participants'] ?? [];
+        for (var pId in participants) {
+          if (pId != currentUser.uid) {
+            participantIds.add(pId);
+          }
+        }
+      }
 
-          final userDocs = await Future.wait(
-            blockedUsersID.map(
-              (id) => _firestore.collection('Users').doc(id).get(),
-            ),
-          );
-          return userDocs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            data['uid'] = doc.id; // Add this line to include the UID
-            return data;
-          }).toList();
-        });
+      if (participantIds.isEmpty) return [];
+
+      List<Map<String, dynamic>> chattedUsers = [];
+
+      // Fetch user data for these IDs
+      // Note: Firestore 'in' query is limited to 10-30 items depending on version. 
+      // For simplicity here, we'll fetch them individually or use a simple loop.
+      for (var uid in participantIds) {
+        var userDoc = await _firestore.collection('Users').doc(uid).get();
+        if (userDoc.exists) {
+          var userData = userDoc.data() as Map<String, dynamic>;
+          userData['Id'] = userDoc.id; // Map doesn't always have Id set
+          chattedUsers.add(userData);
+        }
+      }
+
+      return chattedUsers;
+    });
   }
 }

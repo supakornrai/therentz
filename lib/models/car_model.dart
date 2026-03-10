@@ -4,7 +4,8 @@ class Car {
   final String model;
   final double price;
   final List<String> images;
-  final String tentId;
+
+  final String description;
 
   Car({
     required this.id,
@@ -12,17 +13,17 @@ class Car {
     required this.model,
     required this.price,
     required this.images,
-    required this.tentId,
+    required this.description,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'Id' : id,
-      'Brand' : brand,
-      'Model' : model,
-      'Price' : price,
-      'Images' : images,
-      'TentId' : tentId,
+      'Id': id,
+      'Brand': brand,
+      'Model': model,
+      'Price': price,
+      'Images': images,
+      'Description': description,
     };
   }
 
@@ -31,9 +32,9 @@ class Car {
       id: id,
       brand: data['brand'] ?? '',
       model: data['model'] ?? '',
-      price: (data['price'] ?? 0).toDouble(),
-      images: List<String>.from(data['images'] ?? []),
-      tentId: data['tentId'] ?? '',
+      price: (data['Price'] ?? 0).toDouble(),
+      images: List<String>.from(data['Images'] ?? []),
+      description: data['Description'] ?? '',
     );
   }
 }

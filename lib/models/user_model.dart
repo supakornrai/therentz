@@ -10,11 +10,12 @@ class UserModel {
   String phoneNumber;
   String profileImage;
   AppRole role;
-  int? age;           
+  int? age;
   String? gender;
   DateTime? createAt;
   DateTime? updateAt;
   bool isSuspended;
+  String? assignedCarId;
 
   UserModel({
     this.id,
@@ -30,26 +31,32 @@ class UserModel {
     this.createAt,
     this.updateAt,
     this.isSuspended = false,
+    this.assignedCarId,
   });
 
-  //convert model to json
   Map<String, dynamic> toJson() {
-  return {
-    'Id': id,
-    'Username' : userName,
-    'Firstname' : firstName,
-    'Lastname' : lastName,
-    'Email' : email,
-    'Phone number' : phoneNumber,
-    'Profile Image' : profileImage,
-    'Role' : role.name,
-    'Age': age,        
+    return {
+      'Id': id,
+      'Username': userName,
+      'Firstname': firstName,
+      'Lastname': lastName,
+      'Email': email,
+      'Phone number': phoneNumber,
+      'Profile Image': profileImage,
+      'Role': role.name,
+      'Age': age,
       'Gender': gender,
-    'Create At' : createAt != null ? Timestamp.fromDate(createAt!) : FieldValue.serverTimestamp(),
-    'Update at' : updateAt != null ? Timestamp.fromDate(updateAt!) : FieldValue.serverTimestamp(),
-    'isSuspended': isSuspended,
-  };
+      'Create At': createAt != null
+          ? Timestamp.fromDate(createAt!)
+          : FieldValue.serverTimestamp(),
+      'Update at': updateAt != null
+          ? Timestamp.fromDate(updateAt!)
+          : FieldValue.serverTimestamp(),
+      'isSuspended': isSuspended,
+      'assignedCarId': assignedCarId,
+    };
   }
+
   factory UserModel.fromMap(Map<String, dynamic> map, String id) {
     return UserModel(
       id: id,
@@ -63,13 +70,12 @@ class UserModel {
         (e) => e.name == map['Role'],
         orElse: () => AppRole.user,
       ),
-      age: map['Age'],    
+      age: map['Age'],
       gender: map['Gender'],
       createAt: (map['Create At'] as Timestamp?)?.toDate(),
       updateAt: (map['Update at'] as Timestamp?)?.toDate(),
       isSuspended: map['isSuspended'] ?? false,
+      assignedCarId: map['assignedCarId'],
     );
   }
-
-  
 }

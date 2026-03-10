@@ -1,6 +1,4 @@
-// lib/pages/staff/staff_inventory_page.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class StaffInventoryPage extends StatelessWidget {
@@ -8,37 +6,44 @@ class StaffInventoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final staffId = FirebaseAuth.instance.currentUser?.uid;
-
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('H O M E'),
-        elevation: 0,
+        title: const Text('Car Inventory'),
         backgroundColor: Colors.transparent,
-        foregroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+        elevation: 0,
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -0.5,
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection("Cars")
-            .where("TentId", isEqualTo: staffId) 
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection("Cars").snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          
-          final cars = snapshot.data?.docs ?? [];
+
+          if (!snapshot.hasData) {
+            return const Center(child: Text("Error loading inventory"));
+          }
+
+          final cars = snapshot.data!.docs;
 
           if (cars.isEmpty) {
-            return const Center(child: Text("No cars listed yet."));
+            return const Center(child: Text("No cars in inventory"));
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             itemCount: cars.length,
             itemBuilder: (context, index) {
-              var carData = cars[index].data() as Map<String, dynamic>;
-              return _buildStaffCarTile(context, carData, cars[index].id);
+              final data = cars[index].data() as Map<String, dynamic>;
+              data["id"] = cars[index].id;
+              return _carTile(context, data);
             },
           );
         },
@@ -46,75 +51,155 @@ class StaffInventoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStaffCarTile(BuildContext context, Map<String, dynamic> data, String carId) {
-    String status = data['Status'] ?? 'available';
+  Widget _carTile(BuildContext context, Map<String, dynamic> data) {
+    String brand = data["Brand"] ?? "";
+    String model = data["Model"] ?? "";
+    String price = data["Price"]?.toString() ?? "0";
+    String status = data["Status"] ?? "available";
+    String image = (data["Images"] != null && data["Images"].isNotEmpty) ? data["Images"][0] : "";
+
+    bool isAvailable = status.toLowerCase() == "available";
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          // Car Image Thumbnail
-          Container(
-            width: 100,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.directions_car),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).colorScheme.tertiary, width: 0.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          const SizedBox(width: 15),
-          
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          children: [
+            /// IMAGE SECTION
+            Stack(
               children: [
-                Text(
-                  "${data['Brand']} ${data['Model']}",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Text("฿ ${data['Price']}", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-                const SizedBox(height: 5),
-                
-                // Status Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    status.toUpperCase(),
-                    style: TextStyle(color: _getStatusColor(status), fontSize: 10, fontWeight: FontWeight.bold),
+                image.isNotEmpty
+                    ? Image.network(image, height: 160, width: double.infinity, fit: BoxFit.cover)
+                    : Container(
+                        height: 160,
+                        width: double.infinity,
+                        color: Theme.of(context).colorScheme.tertiary,
+                        child: Icon(Icons.directions_car_filled_rounded,
+                            size: 60, color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+                      ),
+                Positioned(
+                  top: 15,
+                  right: 15,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isAvailable ? Colors.green : Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      status.toUpperCase(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
             ),
+
+            /// INFO SECTION
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "$brand $model",
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "฿$price",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _showEditDescriptionDialog(context, data),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(Icons.edit_note_rounded, color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditDescriptionDialog(BuildContext context, Map<String, dynamic> data) {
+    final TextEditingController descriptionController = TextEditingController(text: data["Description"] ?? "");
+    String carId = data["id"];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text("Edit Description"),
+        content: TextField(
+          controller: descriptionController,
+          maxLines: 5,
+          style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+          decoration: InputDecoration(
+            hintText: "Enter vehicle description...",
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
           ),
-          
-          // Quick Edit Button
-          IconButton(
-            icon: const Icon(Icons.edit_note),
-            onPressed: () {
-              
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await FirebaseFirestore.instance.collection("Cars").doc(carId).update({
+                "Description": descriptionController.text.trim(),
+              });
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Description updated successfully")),
+                );
+              }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text("Save"),
           ),
         ],
       ),
     );
-  }
- 
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'sold': return Colors.red;
-      case 'reserved': return Colors.orange;
-      default: return Colors.green;
-    }
   }
 }

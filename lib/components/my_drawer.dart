@@ -1,84 +1,119 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_rentz/pages/blocked_users_page.dart';
 import 'package:the_rentz/pages/setting_page.dart';
 import 'package:the_rentz/services/auth/auth_service.dart';
 
 class MyDrawer extends StatelessWidget {
-  /// Show Block User menu for admin and staff; hide it for regular users.
-  final bool showBlockUser;
-
-  const MyDrawer({super.key, this.showBlockUser = false});
+   MyDrawer({super.key});
 
   void logout() {
-    final AuthService _authService = AuthService();
-    _authService.signOut();
+    final AuthService authService = AuthService();
+    authService.signOut();
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.surface,
       child: Column(
         children: [
-          DrawerHeader(
-            child: Center(
-              child: Text(
-                'The Rentz',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 30,
-                ),
+
+          Container(
+            width: double.infinity,
+            padding:  EdgeInsets.only(top: 80, bottom: 30, left: 25, right: 25),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                ],
               ),
             ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(left: 25),
-            child: ListTile(
-              title: Text("S E T T I N G"),
-              leading: Icon(Icons.settings),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SettingPage(showBlockUser: showBlockUser),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                 Icon(Icons.directions_car_filled_rounded, color: Colors.white, size: 40),
+                 SizedBox(height: 20),
+                 Text(
+                  'The Rentz',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -1,
                   ),
-                );
-              },
-            ),
-          ),
-
-          // Show Block User menu for admin and staff only (not for regular users)
-          if (showBlockUser)
-            Padding(
-              padding: const EdgeInsets.only(left: 25),
-              child: ListTile(
-                title: Text("B L O C K  U S E R"),
-                leading: Icon(Icons.block),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BlockedUsersPage(),
+                ),
+                if (user != null)
+                  Text(
+                    user.email ?? '',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14,
                     ),
-                  );
-                },
-              ),
-            ),
-
-          Spacer(),
-
-          Padding(
-            padding: EdgeInsets.only(left: 25, bottom: 25),
-            child: ListTile(
-              title: Text("L O G O U T"),
-              leading: Icon(Icons.logout),
-              onTap: logout,
+                  ),
+              ],
             ),
           ),
+
+           SizedBox(height: 20),
+
+          _buildDrawerItem(
+            context,
+            icon: Icons.settings_outlined,
+            label: "S E T T I N G S",
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingPage()),
+              );
+            },
+          ),
+
+
+           Spacer(),
+
+           Divider(indent: 25, endIndent: 25),
+
+          _buildDrawerItem(
+            context,
+            icon: Icons.logout_rounded,
+            label: "L O G O U T",
+            onTap: logout,
+            isLogout: true,
+          ),
+
+           SizedBox(height: 20),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem(BuildContext context,
+      {required IconData icon, required String label, required VoidCallback onTap, bool isLogout = false}) {
+    return Padding(
+      padding:  EdgeInsets.only(left: 15, right: 15, top: 4),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: Icon(
+          icon,
+          color: isLogout ? Colors.redAccent : Theme.of(context).colorScheme.primary,
+        ),
+        title: Text(
+          label,
+          style: TextStyle(
+            color: isLogout ? Colors.redAccent : Theme.of(context).colorScheme.inversePrimary,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            letterSpacing: 1.2,
+          ),
+        ),
+        onTap: onTap,
+        hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.05),
       ),
     );
   }

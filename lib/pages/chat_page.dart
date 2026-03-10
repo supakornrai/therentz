@@ -17,7 +17,6 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
 
-  //chat && auth services
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
@@ -28,11 +27,14 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     myFocusNode.addListener(() {
       if (myFocusNode.hasFocus) {
-        Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
+        Future.delayed(Duration(milliseconds: 500), () => scrollDown());
       }
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
+    Future.delayed(Duration(milliseconds: 500), () => scrollDown());
+
+    
+    _chatService.markMessagesAsRead(widget.receiverID);
   }
 
   @override
@@ -46,12 +48,11 @@ class _ChatPageState extends State<ChatPage> {
   void scrollDown() {
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 1),
+      duration: Duration(seconds: 1),
       curve: Curves.fastOutSlowIn,
     );
   }
-
-  //send message
+  
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
@@ -70,10 +71,16 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(widget.receiverEmail),
+        title: Text(widget.receiverEmail.split('@').first),
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.grey,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 0,
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -0.5,
+        ),
       ),
       body: Column(
         children: [
@@ -89,20 +96,13 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
       stream: _chatService.getMessage(widget.receiverID, senderID),
       builder: (context, snapshot) {
-        //error
-        if (snapshot.hasError) {
-          return const Text('Error');
-        }
-        //loading
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text("Loading");
-        }
+        if (snapshot.hasError) return Center(child: Text('Error loading messages'));
+        if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
 
         return ListView(
           controller: _scrollController,
-          children: snapshot.data!.docs
-              .map((doc) => _buildMessageItem(doc))
-              .toList(),
+          padding: EdgeInsets.symmetric(vertical: 10),
+          children: snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
         );
       },
     );
@@ -110,49 +110,50 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-    //is current user
     bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
-
-    var alignment = isCurrentUser
-        ? Alignment.centerRight
-        : Alignment.centerLeft;
+    var alignment = isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
 
     return Container(
       alignment: alignment,
-      child: Column(
-        crossAxisAlignment: isCurrentUser
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        children: [
-          ChatBubble(message: data["message"], isCurrentUser: isCurrentUser),
-        ],
-      ),
+      child: ChatBubble(message: data["message"], isCurrentUser: isCurrentUser),
     );
   }
 
   Widget _buildUserInput() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 50),
+    return Container(
+      padding: EdgeInsets.only(bottom: 40, left: 20, right: 20, top: 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, -4)),
+        ],
+      ),
       child: Row(
         children: [
           Expanded(
             child: MyTextField(
               controller: _messageController,
+              labelText: "Message",
               hintText: "Type a message",
               obscureText: false,
               focusNode: myFocusNode,
             ),
           ),
+          SizedBox(width: 12),
           Container(
             decoration: BoxDecoration(
-              color: Colors.lightBlueAccent,
+              color: Theme.of(context).colorScheme.primary,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), blurRadius: 10, offset: Offset(0, 4)),
+              ],
             ),
-            margin: const EdgeInsets.only(right: 25),
             child: IconButton(
               onPressed: sendMessage,
-              icon: const Icon(Icons.arrow_upward, color: Colors.white),
+              icon: Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -160,3 +161,4 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 }
+

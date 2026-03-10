@@ -25,28 +25,20 @@ class InboxPage extends StatelessWidget {
             children: [
               // Report User
               ListTile(
-                leading: const Icon(Icons.flag),
-                title: const Text('Report User'),
+                leading: Icon(Icons.flag),
+                title: Text('Report User'),
                 onTap: () {
                   _chatService.reportUser(userId); 
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("User Reported"))
+                    SnackBar(content: Text("User Reported"))
                   );
-                },
-              ),
-              // Block User
-              ListTile(
-                leading: const Icon(Icons.block),
-                title: const Text('Block User'),
-                onTap: () {
-                  _showBlockConfirmation(context, userId);
                 },
               ),
               // Cancel
               ListTile(
-                leading: const Icon(Icons.cancel),
-                title: const Text('Cancel'),
+                leading: Icon(Icons.cancel),
+                title: Text('Cancel'),
                 onTap: () => Navigator.pop(context),
               ),
             ],
@@ -55,42 +47,22 @@ class InboxPage extends StatelessWidget {
       },
     );
   }
-  void _showBlockConfirmation(BuildContext context, String userId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Block User"),
-        content: const Text("Are you sure you want to block this user?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              _chatService.blockUser(userId); // Call your service
-              Navigator.pop(context); // close dialog
-              Navigator.pop(context); // close bottom sheet
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("User Blocked"))
-              );
-            },
-            child: const Text("Block"),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Inbox'),
+        title: Text('Direct Messages'),
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.grey,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 0,
+        centerTitle: false,
+        titleTextStyle: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -0.5,
+        ),
       ),
       body: _buildUserList(),
     );
@@ -98,51 +70,73 @@ class InboxPage extends StatelessWidget {
 
   Widget _buildUserList() {
     return StreamBuilder(
-      stream: _chatService.getUsersStreamExcludingBlocked(),
+      stream: _chatService.getChattedUsersStream(),
       builder: (context, snapshot) {
-        //error
         if (snapshot.hasError) {
-          return const Text('Error');
+          return Center(child: Text('Something went wrong'));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text('Loading');
+          return Center(child: CircularProgressIndicator());
         }
 
-        //return list view
+        final users = snapshot.data!;
+
+        if (users.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.chat_bubble_outline_rounded, size: 80, color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+               SizedBox(height: 16),
+               Text("No messages yet", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+               SizedBox(height: 8),
+                Text("Start a conversation with our staff",
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.5))),
+              ],
+            ),
+          );
+        }
+
         return ListView(
-          children: snapshot.data!
-              .map<Widget>((userData) => _buildUserListItem(userData, context))
-              .toList(),
+          padding: EdgeInsets.only(top: 10),
+          children: users.map<Widget>((userData) => _buildUserListItem(userData, context)).toList(),
         );
       },
     );
   }
 
-  //build individual list title for user
   Widget _buildUserListItem(
     Map<String, dynamic> userData,
     BuildContext context,
   ) {
-    //display all user except current user
     if (userData['Email'] != _authService.getCurrentUser()!.email) {
-      return UserTile(
-        text: userData['Email'],
-        onTap: () {
-          //tap on user -> go to chat page
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatPage(
-                receiverEmail: userData['Email'],
-                receiverID: userData["Id"],
-              ),
+      return StreamBuilder<int>(
+        stream: _chatService.getUnreadCountStream(userData["Id"]),
+        builder: (context, unreadSnapshot) {
+          int unreadCount = unreadSnapshot.data ?? 0;
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: UserTile(
+              text: userData['Email'],
+              unreadCount: unreadCount,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      receiverEmail: userData['Email'],
+                      receiverID: userData["Id"],
+                    ),
+                  ),
+                );
+              },
+              onLongPress: () => _showOptions(context, userData["Id"], userData['Email']),
             ),
           );
         },
-        onLongPress: () => _showOptions(context, userData["Id"], userData['Email']),
       );
     } else {
-      return Container();
+      return SizedBox();
     }
   }
 }

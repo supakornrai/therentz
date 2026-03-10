@@ -7,44 +7,37 @@ import 'package:the_rentz/services/auth/auth_service.dart';
 class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
 
-  const RegisterPage({super.key, required this.onTap});
+  RegisterPage({super.key, required this.onTap});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  //email & pasword controller
   final TextEditingController _emailController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  final TextEditingController _confirmPasswordController = TextEditingController();
-
-  // register method
   void register(BuildContext context) async {
-
-    // password match -> create a user
     if (_passwordController.text == _confirmPasswordController.text) {
       try {
-        AuthService().signUpWithEmailAndPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-        
+        await AuthService().signUpWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+        );
       } catch (e) {
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(title: Text(e.toString())),
         );
       }
-    }
-    // password does not match -> tell user
-    else {
+    } else {
       showDialog(
         context: context,
         builder: (context) =>
-            const AlertDialog(title: Text('Password don\'t match')),
+            AlertDialog(title: Text('Passwords don\'t match')),
       );
     }
   }
@@ -59,63 +52,61 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //logo
+
                 Icon(
                   Icons.car_rental_rounded,
                   size: 60,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-          
-                const SizedBox(height: 25),
-          
-                //welcome back message
+
+                SizedBox(height: 25),
                 Text(
-                  "Let's create a account",
+                  "Let's create an account",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     fontSize: 20,
                   ),
                 ),
-          
-                const SizedBox(height: 25),
-          
-                //email textfield
+
+                SizedBox(height: 25),
                 MyTextField(
                   controller: _emailController,
-                  hintText: 'Email',
+                  labelText: "Email",
+                  hintText: "Enter your email",
                   obscureText: false,
                 ),
-          
-                const SizedBox(height: 10),
-          
-                //pw textfield
+
+                SizedBox(height: 10),
                 MyTextField(
                   controller: _passwordController,
-                  hintText: 'Password',
+                  labelText: "Password",
+                  hintText: "Create password",
                   obscureText: true,
                 ),
-          
-                const SizedBox(height: 10),
-          
+
+                SizedBox(height: 10),
+
+                // Confirm Password Input
                 MyTextField(
                   controller: _confirmPasswordController,
-                  hintText: 'Confirm Password',
+                  labelText: "Confirm Password",
+                  hintText: "Re-enter password",
                   obscureText: true,
                 ),
-          
-                const SizedBox(height: 25),
-          
-                //login button
+
+                SizedBox(height: 25),
+
+                // Submit Button
                 MyButton(onTap: () => register(context), text: 'Register'),
-          
-                const SizedBox(height: 25),
-          
-                //register??
+
+                SizedBox(height: 25),
+
+                // Login Route Toggle
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account ',
+                      'Already have an account? ',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -132,40 +123,43 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
-                 SizedBox(height: 50),
-          
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(thickness: 0.5, color: Colors.grey[400]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            'Or Login with',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(thickness: 0.5, color: Colors.grey[400]),
-                        ),
-                      ],
-                    ),
-                  ),
-          
-                  SizedBox(height: 50),
-          
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+
+                SizedBox(height: 50),
+
+                // OAuth Divider
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
                     children: [
-                      SquareButton(
-                        onTap: () => AuthService().signInWithGoogle(),
-                        imagePath: 'assets/images/google (1).png',
+                      Expanded(
+                        child: Divider(thickness: 0.5, color: Colors.grey[400]),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          'Or Login with',
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(thickness: 0.5, color: Colors.grey[400]),
                       ),
                     ],
                   ),
+                ),
+
+                SizedBox(height: 50),
+
+                // Google OAuth Button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SquareButton(
+                      onTap: () => AuthService().signInWithGoogle(),
+                      imagePath: 'assets/images/google (1).png',
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

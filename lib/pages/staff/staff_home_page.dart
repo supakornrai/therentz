@@ -7,38 +7,44 @@ import 'package:the_rentz/pages/staff/staff_inventory_page.dart';
 import 'package:the_rentz/pages/staff/staff_list_page.dart';
 
 class StaffHomePage extends StatefulWidget {
-  const StaffHomePage({super.key});
+  StaffHomePage({super.key});
 
   @override
   State<StaffHomePage> createState() => _StaffHomePageState();
 }
 
 class _StaffHomePageState extends State<StaffHomePage> {
+
   int _selectIndex = 0;
 
-  void navigatorBottomBar(int index) {
+  void navigatorBottomBar(int index){
     setState(() {
       _selectIndex = index;
     });
   }
 
-  
   final List<Widget> _pages = [
-    StaffInventoryPage(), 
-    StaffAddCarPage(),       
-    StaffListPage(), // List: Manage meetings, car
-    InboxPage(),         
-    ProfliePage(),       
+
+    StaffInventoryPage(),
+    StaffAddCarPage(),
+    StaffListPage(),
+    InboxPage(),
+    ProfilePage(),
+
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: Theme.of(context).colorScheme.surface,
+
       bottomNavigationBar: StaffBottomNavBar(
         onTapChange: (index) => navigatorBottomBar(index),
       ),
+
       body: _pages[_selectIndex],
+
     );
   }
 }
